@@ -1,12 +1,16 @@
 package driver;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 public class DriverSingleton {
 
     private static WebDriver driver;
+
+    private final static String GOOGLE_VERSION = "87.0.4280.88";
 
     private DriverSingleton() {
 
@@ -16,10 +20,12 @@ public class DriverSingleton {
         if (driver == null) {
             switch (System.getProperty("browser")){
                 case "firefox": {
+                    WebDriverManager.firefoxdriver().setup();
                     driver = new FirefoxDriver();
                     break;
                 }
                 default: {
+                    WebDriverManager.chromedriver().version(GOOGLE_VERSION).setup();
                     driver = new ChromeDriver();
                     break;
                 }

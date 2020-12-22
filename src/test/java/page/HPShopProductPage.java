@@ -15,6 +15,7 @@ public class HPShopProductPage extends HPShopPage{
         WebElement addToCartButton = WaitElementMethods.waitForElementLocatedBy(driver,
                 By.xpath("//button[@title='Добавить в корзину']"), WAIT_TIME_SECONDS);
         addToCartButton.click();
+        logger.info("Product added to cart");
         return this;
     }
 }

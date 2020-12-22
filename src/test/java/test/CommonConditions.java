@@ -5,7 +5,10 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import driver.DriverSingleton;
+import org.testng.annotations.Listeners;
+import util.TestListener;
 
+@Listeners({TestListener.class})
 public abstract class CommonConditions {
 
     protected WebDriver driver;

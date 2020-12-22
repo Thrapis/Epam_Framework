@@ -1,5 +1,6 @@
 package page;
 
+import model.CartStatus;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -60,10 +61,16 @@ public class HPShopCartPage extends HPShopPage{
         return totalCost;
     }
 
-    public boolean cartIsEmpty() {
-        WebElement emptyCartMessage = WaitElementMethods.fluentWaitForElementLocatedBy(driver,
-                By.xpath("//p[text()='Ваша корзина пуста']"), WAIT_TIME_SECONDS, 1);
-        return emptyCartMessage.isDisplayed();
+    public CartStatus getCartStatus() {
+        try {
+            WebElement emptyCartMessage = WaitElementMethods.fluentWaitForElementLocatedBy(driver,
+                    By.xpath("//p[text()='Ваша корзина пуста']"), WAIT_TIME_FEW_SECONDS, 1);
+            if (emptyCartMessage.isDisplayed()) {
+                return CartStatus.EMPTY;
+            }
+        } catch (Exception exception) { }
+
+        return CartStatus.NOT_EMPTY;
     }
 
     public HPShopCartPage purgeCart() {

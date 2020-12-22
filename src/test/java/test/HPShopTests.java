@@ -1,10 +1,9 @@
 package test;
 
+import model.*;
 import org.testng.annotations.Test;
-import model.ProductInfo;
 import page.HPShopCartPage;
 import page.HPShopHomePage;
-import org.testng.Assert;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,15 +34,19 @@ public class HPShopTests extends CommonConditions {
         String firstProductPageUrl = "https://hp-shop.by/katalog/monitory/hp/monitor-elitedisplay-s430c-5fw74aa.html";
         String secondProductPageUrl = "https://hp-shop.by/katalog/aksessuary/ryukzaki/ryukzak-hp-odyssey-redblack-backpack-x0r83aa.html";
         String thirdProductPageUrl = "https://hp-shop.by/katalog/aksessuary/myshi/mysh-hp-x1500-h4k66aa.html";
+
+        ProductLink firstProductLink = new ProductLink(CatalogCategory.MONITORS, CatalogSubcategory.HP, "Монитор EliteDisplay S430c (5FW74AA)");
+        ProductLink secondProductLink = new ProductLink(CatalogCategory.ACCESSORIES, CatalogSubcategory.BACKPACKS, "Рюкзак HP Odyssey Red/Black Backpack (X0R83AA)");
+        ProductLink thirdProductLink = new ProductLink(CatalogCategory.ACCESSORIES, CatalogSubcategory.MOUSES, "Мышь HP X1500 (H4K66AA)");
         HPShopCartPage cartPage = new HPShopHomePage(driver)
-                .jumpToProductPage(firstProductPageUrl)
+                .jumpToProductPage(firstProductLink)
                 .addToCart()
-                .jumpToProductPage(secondProductPageUrl)
+                .jumpToProductPage(secondProductLink)
                 .addToCart()
-                .jumpToProductPage(thirdProductPageUrl)
+                .jumpToProductPage(thirdProductLink)
                 .addToCart()
                 .openCart()
                 .purgeCart();
-        Assert.assertTrue(cartPage.cartIsEmpty());
+        assertThat(cartPage.getCartStatus(), is(equalTo(CartStatus.EMPTY)));
     }
 }
