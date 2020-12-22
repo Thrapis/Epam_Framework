@@ -21,16 +21,16 @@ public class HPShopTests extends CommonConditions {
 
     @Test(enabled = true)
     public void verifyCartAfterAdditionOfProductTest() {
-        double expectedCartTotalCost = 3504.0;
+        double expectedCartTotalCost = 513.0;
         int expectedProductCount = 1;
-        String productName = "EliteDisplay S430c";
+        String expectedProductName = "Монитор HP EliteDisplay E223 (1FH45AA)";
         HPShopCartPage cartPage = new HPShopHomePage(driver)
                 .jumpToProductPage(firstProductLink)
                 .addToCart()
                 .openCart();
         List<ProductInfo> products = cartPage.getProductsFromCart();
         assertThat(cartPage.getCartTotalCost(), is(equalTo(expectedCartTotalCost)));
-        assertThat(products.get(0).getName(), containsString(productName));
+        assertThat(products.get(0).getName(), containsString(expectedProductName));
         assertThat(products.get(0).getCount(), is(equalTo(expectedProductCount)));
     }
 
