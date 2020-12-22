@@ -18,7 +18,7 @@ public class WebPayPaymentPage {
 
     public String getEmail() {
         By submitButtonLocator = By.xpath(String.format(inputWithIdTemplate, "cc_email"));
-        return WaitElementMethods.waitForElementLocatedBy(driver, submitButtonLocator,
-                WAIT_TIME_SECONDS).getAttribute("value");
+        return WaitElementMethods.fluentWaitForElementLocatedBy(driver, submitButtonLocator,
+                WAIT_TIME_SECONDS, 1).getAttribute("value");
     }
 }
