@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.is;
 
 public class HPShopTests extends CommonConditions {
 
-    final static ProductLink firstProductLink = new ProductLink(CatalogCategory.MONITORS, CatalogSubcategory.HP, "Монитор EliteDisplay S430c (5FW74AA)");
+    final static ProductLink firstProductLink = new ProductLink(CatalogCategory.MONITORS, CatalogSubcategory.HP, "Монитор HP EliteDisplay E223 (1FH45AA)");
     final static ProductLink secondProductLink = new ProductLink(CatalogCategory.ACCESSORIES, CatalogSubcategory.BACKPACKS, "Рюкзак HP Odyssey Red/Black Backpack (X0R83AA)");
     final static ProductLink thirdProductLink = new ProductLink(CatalogCategory.ACCESSORIES, CatalogSubcategory.MOUSES, "Мышь HP X1500 (H4K66AA)");
 
@@ -25,8 +25,7 @@ public class HPShopTests extends CommonConditions {
         int expectedProductCount = 1;
         String productName = "EliteDisplay S430c";
         HPShopCartPage cartPage = new HPShopHomePage(driver)
-                .searchForTerms(productName)
-                .selectProductLink(productName)
+                .jumpToProductPage(firstProductLink)
                 .addToCart()
                 .openCart();
         List<ProductInfo> products = cartPage.getProductsFromCart();
@@ -37,7 +36,7 @@ public class HPShopTests extends CommonConditions {
 
     @Test(enabled = true)
     public void verifyCartAfterPurgeTest() {
-        String firstProductPageUrl = "https://hp-shop.by/katalog/monitory/hp/monitor-elitedisplay-s430c-5fw74aa.html";
+        String firstProductPageUrl = "https://hp-shop.by/katalog/monitory/hp/monitor-hp-elitedisplay-e223-1fh45aa.html";
         String secondProductPageUrl = "https://hp-shop.by/katalog/aksessuary/ryukzaki/ryukzak-hp-odyssey-redblack-backpack-x0r83aa.html";
         String thirdProductPageUrl = "https://hp-shop.by/katalog/aksessuary/myshi/mysh-hp-x1500-h4k66aa.html";
 
