@@ -6,15 +6,11 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
-public class DriverSingleton {
+public abstract class DriverSingleton {
 
     private static WebDriver driver;
 
     private final static String GOOGLE_VERSION = "87.0.4280.88";
-
-    private DriverSingleton() {
-
-    }
 
     public static WebDriver getDriver() {
         if (driver == null) {

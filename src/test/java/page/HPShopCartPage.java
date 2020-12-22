@@ -1,19 +1,22 @@
 package page;
 
-import model.CartStatus;
+import model.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import model.ProductInfo;
 import wait.WaitElementMethods;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class HPShopCartPage extends HPShopPage{
 
     private final static String productCountPathTemplate = "//a[contains(text(), '$')]/../../..//input[@class='shk-count']";
+    private final static String inputWithTypeAndValueTemplate = "//input[@type='%s' and @value='%s']";
+    private final static String inputWithTypeAndNameTemplate = "//input[@type='%s' and @name='%s']";
+    private final static String textareaWithIdTemplate = "//textarea[@id='%s']";
 
     public HPShopCartPage(WebDriver driver) { super(driver); }
 
@@ -73,6 +76,38 @@ public class HPShopCartPage extends HPShopPage{
         return CartStatus.NOT_EMPTY;
     }
 
+    public HPShopCartPage setDeliveryMethod(DeliveryMethod deliveryMethod) {
+        By radioButtonLocator = By.xpath(String.format(inputWithTypeAndValueTemplate, "radio", deliveryMethod.getDeliveryMethod()));
+        WaitElementMethods.waitForElementLocatedBy(driver, radioButtonLocator, WAIT_TIME_SECONDS).click();
+        return this;
+    }
+
+    public HPShopCartPage setPaymentMethod(PaymentMethod paymentMethod) {
+        By radioButtonLocator = By.xpath(String.format(inputWithTypeAndValueTemplate, "radio", paymentMethod.getPaymentMethod()));
+        WaitElementMethods.waitForElementLocatedBy(driver, radioButtonLocator, WAIT_TIME_SECONDS).click();
+        return this;
+    }
+
+    public HPShopCartPage setCustomerOrderData(CustomerOrderData customerOrderData) {
+        By nameTextFieldLocator = By.xpath(String.format(inputWithTypeAndNameTemplate, "text", "name"));
+        By emailTextFieldLocator = By.xpath(String.format(inputWithTypeAndNameTemplate, "email", "email"));
+        By phoneNumberTextFieldLocator = By.xpath(String.format(inputWithTypeAndNameTemplate, "text", "phone"));
+        By addressTextFieldLocator = By.xpath(String.format(inputWithTypeAndNameTemplate, "text", "address"));
+        By commentTextFieldLocator = By.xpath(String.format(textareaWithIdTemplate, "message"));
+
+        WaitElementMethods.waitForElementLocatedBy(driver, nameTextFieldLocator, WAIT_TIME_SECONDS)
+                .sendKeys(customerOrderData.getFullName());
+        WaitElementMethods.waitForElementLocatedBy(driver, emailTextFieldLocator, WAIT_TIME_SECONDS)
+                .sendKeys(customerOrderData.getEmail());
+        WaitElementMethods.waitForElementLocatedBy(driver, phoneNumberTextFieldLocator, WAIT_TIME_SECONDS)
+                .sendKeys(customerOrderData.getPhoneNumber());
+        WaitElementMethods.waitForElementLocatedBy(driver, addressTextFieldLocator, WAIT_TIME_SECONDS)
+                .sendKeys(customerOrderData.getAddress());
+        WaitElementMethods.waitForElementLocatedBy(driver, commentTextFieldLocator, WAIT_TIME_SECONDS)
+                .sendKeys(customerOrderData.getComment());
+        return this;
+    }
+
     public HPShopCartPage purgeCart() {
         WebDriverWait wait = new WebDriverWait(driver, WAIT_TIME_SECONDS);
         By purgeCartLocator = By.xpath("//a[@id='butEmptyCart']");
@@ -87,5 +122,11 @@ public class HPShopCartPage extends HPShopPage{
                 driver, confirmButtonLocator, WAIT_TIME_SECONDS, 1);
         confirmButton.click();
         return this;
+    }
+
+    public HPShopSuccessOrderPage checkoutOrder() {
+        By submitButtonLocator = By.xpath(String.format(inputWithTypeAndValueTemplate, "submit", "Оформить заказ"));
+        WaitElementMethods.waitForElementLocatedBy(driver, submitButtonLocator, WAIT_TIME_SECONDS).click();
+        return new HPShopSuccessOrderPage(driver);
     }
 }
