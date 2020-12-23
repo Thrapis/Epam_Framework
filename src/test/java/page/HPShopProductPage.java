@@ -12,9 +12,8 @@ public class HPShopProductPage extends HPShopPage{
     }
 
     public HPShopProductPage addToCart() {
-        WebElement addToCartButton = WaitElementMethods.waitForElementLocatedBy(driver,
-                By.xpath("//button[@title='Добавить в корзину']"), WAIT_TIME_SECONDS);
-        addToCartButton.click();
+        WaitElementMethods.waitForElementLocatedBy(driver,
+                By.xpath("//button[@title='Добавить в корзину']"), WAIT_TIME_SECONDS).click();
         logger.info("Product added to cart");
         return this;
     }
@@ -25,6 +24,7 @@ public class HPShopProductPage extends HPShopPage{
                 WAIT_TIME_SECONDS);
         inputProductCount.clear();
         inputProductCount.sendKeys(count.toString());
+        logger.info("Count of product was set");
         return this;
     }
 }

@@ -5,9 +5,11 @@ import model.ProductLink;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import model.SearchAttribute;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import wait.WaitElementMethods;
 
 public abstract class HPShopPage {
@@ -26,12 +28,10 @@ public abstract class HPShopPage {
     }
 
     public HPShopPage setSearchAttribute(SearchAttribute attribute) {
-        WebElement attributeSelector = WaitElementMethods.waitForElementLocatedBy(driver,
-                By.xpath("//div[@id='product-categori']"), WAIT_TIME_SECONDS);
-        attributeSelector.click();
-        WebElement selection = WaitElementMethods.waitForElementLocatedBy(driver,
-                By.xpath(attributeSelectionTemplate.replace("$", attribute.getAttribute())), WAIT_TIME_SECONDS);
-        selection.click();
+        WaitElementMethods.waitForElementLocatedBy(driver,
+                By.xpath("//div[@id='product-categori']"), WAIT_TIME_SECONDS).click();
+        WaitElementMethods.waitForElementLocatedBy(driver, By.xpath(attributeSelectionTemplate
+                .replace("$", attribute.getAttribute())), WAIT_TIME_SECONDS).click();
         return this;
     }
 
@@ -44,9 +44,13 @@ public abstract class HPShopPage {
     }
 
     public HPShopCartPage openCart() {
-        WebElement toCartButton = WaitElementMethods.waitForElementLocatedBy(driver,
-                By.xpath("//div[@class='header-cart-area']"), WAIT_TIME_SECONDS);
-        toCartButton.click();
+        WaitElementMethods.waitForElementLocatedBy(driver,
+                By.xpath("//div[@class='header-cart-area']"), WAIT_TIME_SECONDS).click();
+
+        WebDriverWait wait = new WebDriverWait(driver, WAIT_TIME_SECONDS);
+        wait.until(driver -> (boolean)((JavascriptExecutor)driver).
+                executeScript("return jQuery.active == 0"));
+
         return new HPShopCartPage(driver);
     }
 
