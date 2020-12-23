@@ -18,4 +18,13 @@ public class HPShopProductPage extends HPShopPage{
         logger.info("Product added to cart");
         return this;
     }
+
+    public HPShopProductPage setCountOfProduct(Integer count) {
+        By inputProductCountLocator = By.xpath("//input[@id='qty']");
+        WebElement inputProductCount = WaitElementMethods.waitForElementLocatedBy(driver, inputProductCountLocator,
+                WAIT_TIME_SECONDS);
+        inputProductCount.clear();
+        inputProductCount.sendKeys(count.toString());
+        return this;
+    }
 }

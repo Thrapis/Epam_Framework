@@ -1,5 +1,6 @@
 package page;
 
+import model.CatalogLink;
 import model.ProductLink;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +16,7 @@ public abstract class HPShopPage {
 
     protected static final String HOMEPAGE_URL = "https://hp-shop.by/";
     protected static final long WAIT_TIME_SECONDS = 10;
-    protected static final long WAIT_TIME_FEW_SECONDS = 4;
+    protected static final long WAIT_TIME_FEW_SECONDS = 5;
     protected static final Logger logger = LogManager.getRootLogger();
 
     private static final String attributeSelectionTemplate = "//label[text()='$']/..";
@@ -49,10 +50,11 @@ public abstract class HPShopPage {
         return new HPShopCartPage(driver);
     }
 
-    public HPShopProductPage jumpToProductPage(String productPage) {
-        driver.get(productPage);
-        return new HPShopProductPage(driver);
+    public HPShopCatalogPage jumpToCatalogPage(CatalogLink catalogLink) {
+        driver.get(catalogLink.getLink());
+        return new HPShopCatalogPage(driver);
     }
+
     public HPShopProductPage jumpToProductPage(ProductLink productLink) {
         driver.get(productLink.getLink());
         return new HPShopProductPage(driver);

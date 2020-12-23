@@ -2,23 +2,27 @@ package test;
 
 import model.*;
 import org.testng.annotations.Test;
-import page.HPShopCartPage;
-import page.HPShopHomePage;
-import page.WebPayPaymentPage;
+import page.*;
+import service.CustomerOrderDataCreator;
 
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class HPShopTests extends CommonConditions {
 
-    final static ProductLink firstProductLink = new ProductLink(CatalogCategory.MONITORS, CatalogSubcategory.HP, "Монитор HP EliteDisplay E223 (1FH45AA)");
-    final static ProductLink secondProductLink = new ProductLink(CatalogCategory.ACCESSORIES, CatalogSubcategory.BACKPACKS, "Рюкзак HP Odyssey Red/Black Backpack (X0R83AA)");
-    final static ProductLink thirdProductLink = new ProductLink(CatalogCategory.ACCESSORIES, CatalogSubcategory.MOUSES, "Мышь HP X1500 (H4K66AA)");
+    //1
+    @Test(enabled = true)
+    public void verifyEmptySearchResultsTest() {
+        String searchTerm = "qwerty";
+        HPShopSearchResultsPage searchResultsPage = new HPShopHomePage(driver)
+                .searchForTerms(searchTerm);
 
+        assertThat(searchResultsPage.getSearchStatus(), is(equalTo(FullnessStatus.EMPTY)));
+    }
+
+    //2
     @Test(enabled = true)
     public void verifyCartAfterAdditionOfProductTest() {
         double expectedCartTotalCost = 513.0;
@@ -29,17 +33,47 @@ public class HPShopTests extends CommonConditions {
                 .addToCart()
                 .openCart();
         List<ProductInfo> products = cartPage.getProductsFromCart();
+        
         assertThat(cartPage.getCartTotalCost(), is(equalTo(expectedCartTotalCost)));
         assertThat(products.get(0).getName(), containsString(expectedProductName));
         assertThat(products.get(0).getCount(), is(equalTo(expectedProductCount)));
     }
 
+    //3
+    @Test(enabled = true)
+    public void verifyFailedOrderTest() {
+        CustomerOrderData customerOrderData = CustomerOrderDataCreator.withEmptyCredentials();
+
+        HPShopPage openedPage = new HPShopHomePage(driver)
+                .jumpToProductPage(firstProductLink)
+                .addToCart()
+                .openCart()
+                .setCustomerOrderData(customerOrderData)
+                .checkoutOrder();
+
+        assertThat(openedPage, is(instanceOf(HPShopCartPage.class)));
+    }
+
+    //4
+    @Test(enabled = true)
+    public void verifyCartAfterAdditionAndDeletingOfProductTest() {
+        int expectedCountOfProductsInCart = 1;
+        String deletingProductName = "Монитор HP EliteDisplay E223 (1FH45AA)";
+        HPShopCartPage cartPage = new HPShopHomePage(driver)
+                .jumpToProductPage(firstProductLink)
+                .addToCart()
+                .jumpToProductPage(secondProductLink)
+                .addToCart()
+                .openCart()
+                .deleteProductFromCart(deletingProductName);
+        int actualCountOfProductsInCart = cartPage.getProductsFromCart().size();
+
+        assertThat(actualCountOfProductsInCart, is(equalTo(expectedCountOfProductsInCart)));
+    }
+
+    //5
     @Test(enabled = true)
     public void verifyCartAfterPurgeTest() {
-        String firstProductPageUrl = "https://hp-shop.by/katalog/monitory/hp/monitor-hp-elitedisplay-e223-1fh45aa.html";
-        String secondProductPageUrl = "https://hp-shop.by/katalog/aksessuary/ryukzaki/ryukzak-hp-odyssey-redblack-backpack-x0r83aa.html";
-        String thirdProductPageUrl = "https://hp-shop.by/katalog/aksessuary/myshi/mysh-hp-x1500-h4k66aa.html";
-
         HPShopCartPage cartPage = new HPShopHomePage(driver)
                 .jumpToProductPage(firstProductLink)
                 .addToCart()
@@ -49,13 +83,14 @@ public class HPShopTests extends CommonConditions {
                 .addToCart()
                 .openCart()
                 .purgeCart();
-        assertThat(cartPage.getCartStatus(), is(equalTo(CartStatus.EMPTY)));
+
+        assertThat(cartPage.getCartStatus(), is(equalTo(FullnessStatus.EMPTY)));
     }
 
+    //6
     @Test(enabled = true)
     public void verifySuccessOrderWithCardPayTest() {
-        CustomerOrderData customerOrderData = new CustomerOrderData("fawe","wfe@we.ru",
-                "1234","wffwfasea","waegwga");
+        CustomerOrderData customerOrderData = CustomerOrderDataCreator.withCredentialsFromProperty();
 
         WebPayPaymentPage paymentPage = new HPShopHomePage(driver)
                 .jumpToProductPage(firstProductLink)
@@ -63,9 +98,64 @@ public class HPShopTests extends CommonConditions {
                 .openCart()
                 .setPaymentMethod(PaymentMethod.ONLINE_PAYMENT_BY_CREDIT_CARD_ON_THE_WEBSITE)
                 .setCustomerOrderData(customerOrderData)
-                .checkoutOrder()
+                .checkoutSuccessOrder()
                 .payNow();
 
         assertThat(paymentPage.getEmail(), is(equalTo(customerOrderData.getEmail())));
+    }
+
+    //7
+    @Test(enabled = true)
+    public void verifyAddingALargeNumberOfProductsTest() {
+        int countOfProduct = 2_000_000;
+        double expectedCartTotalCost = 1_026_000_000.0;
+        HPShopCartPage cartPage = new HPShopHomePage(driver)
+                .jumpToProductPage(firstProductLink)
+                .setCountOfProduct(countOfProduct)
+                .addToCart()
+                .openCart();
+
+        assertThat(cartPage.getCartTotalCost(), is(equalTo(expectedCartTotalCost)));
+    }
+
+    //8
+    @Test(enabled = true)
+    public void verifyChangeTheQuantityOfProductsTest() {
+        int countOfProduct = 2_000;
+        int newCountOfProduct = 500;
+        double expectedCartTotalCost = 256_500.0;
+        String productName = "Монитор HP EliteDisplay E223 (1FH45AA)";
+        HPShopCartPage cartPage = new HPShopHomePage(driver)
+                .jumpToProductPage(firstProductLink)
+                .setCountOfProduct(countOfProduct)
+                .addToCart()
+                .openCart()
+                .setProductCountFromCart(productName, newCountOfProduct);
+
+        assertThat(cartPage.getCartTotalCost(), is(equalTo(expectedCartTotalCost)));
+    }
+
+    //9
+    @Test(enabled = true)
+    public void verifySelectionOnlyElementsOfTypeMouseTest() {
+        String expectedNameContainment = "Мышь";
+        List<CatalogProductInfo> products = new HPShopHomePage(driver)
+                .jumpToCatalogPage(mouseCatalogPageLink)
+                .getProductsFromCatalogPage();
+
+        assertThat(products.get(0).getName(), containsString(expectedNameContainment));
+    }
+
+    //10
+    @Test(enabled = true)
+    public void verifyChangeOfDeliveryMethodTest() {
+        double expectedCartTotalCost = 528.0;
+        HPShopCartPage cartPage = new HPShopHomePage(driver)
+                .jumpToProductPage(firstProductLink)
+                .addToCart()
+                .openCart()
+                .setDeliveryMethod(DeliveryMethod.BY_COURIER_IN_BELARUS);
+
+        assertThat(cartPage.getCartTotalCost(), is(equalTo(expectedCartTotalCost)));
     }
 }

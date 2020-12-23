@@ -1,6 +1,6 @@
 package model;
 
-public enum CartStatus {
+public enum FullnessStatus {
     EMPTY,
     NOT_EMPTY
 }
