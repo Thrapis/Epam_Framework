@@ -1,4 +1,4 @@
-package model;
+package model.link;
 
 public enum CatalogSubcategory {
     HP("hp"),

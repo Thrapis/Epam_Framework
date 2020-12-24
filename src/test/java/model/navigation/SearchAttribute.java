@@ -1,4 +1,4 @@
-package model;
+package model.navigation;
 
 public enum SearchAttribute {
     ALL("Весь католог"),

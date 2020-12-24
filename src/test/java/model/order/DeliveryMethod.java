@@ -1,4 +1,4 @@
-package model;
+package model.order;
 
 public enum DeliveryMethod {
     PICK_UP_BY_YOURSELF("Забрать самостоятельно"),

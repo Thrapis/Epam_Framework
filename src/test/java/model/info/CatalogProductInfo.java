@@ -1,4 +1,4 @@
-package model;
+package model.info;
 
 public class CatalogProductInfo {
     private final String name;

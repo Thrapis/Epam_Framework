@@ -1,4 +1,4 @@
-package model;
+package model.order;
 
 public enum PaymentMethod {
     PAYMENT_UPON_PICKUP("Оплата при самовывозе"),

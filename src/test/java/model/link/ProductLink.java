@@ -1,5 +1,4 @@
-package model;
-
+package model.link;
 
 import util.Transliterator;
 

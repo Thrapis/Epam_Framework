@@ -1,4 +1,4 @@
-package model;
+package model.link;
 
 public enum CatalogCategory {
     NOTEBOOKS("notebook"),

@@ -1,8 +1,7 @@
-package page;
+package page.hp_shop;
 
-import model.CatalogProductInfo;
+import model.info.CatalogProductInfo;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
@@ -10,20 +9,20 @@ import java.util.List;
 
 public class HPShopCatalogPage extends HPShopPage {
 
-    public HPShopCatalogPage(WebDriver driver) {
-        super(driver);
+    private final static By PRODUCT_NAMES_LOCATOR = By.xpath("//div[@class='tab-pane active']//div[@class='h2 product-name']/a");
+    private final static By PRODUCT_OLD_PRICES_LOCATOR = By.xpath("//div[@class='tab-pane active']//div[@class='product-price']/p/span");
+    private final static By PRODUCT_NEW_PRICES_LOCATOR = By.xpath("//div[@class='tab-pane active']//div[@class='product-price']/p");
+
+    public HPShopCatalogPage() {
+        super();
     }
 
     public List<CatalogProductInfo> getProductsFromCatalogPage() {
-        By productNamesLocator = By.xpath("//div[@class='tab-pane active']//div[@class='h2 product-name']/a");
-        By productOldPricesLocator = By.xpath("//div[@class='tab-pane active']//div[@class='product-price']/p/span");
-        By productNewPricesLocator = By.xpath("//div[@class='tab-pane active']//div[@class='product-price']/p");
-
-        List<WebElement> productNames = driver.findElements(productNamesLocator);
-        List<WebElement> productOldPrices = driver.findElements(productOldPricesLocator);
-        List<WebElement> productNewPrices = driver.findElements(productNewPricesLocator);
-
+        List<WebElement> productNames = driver.findElements(PRODUCT_NAMES_LOCATOR);
+        List<WebElement> productOldPrices = driver.findElements(PRODUCT_OLD_PRICES_LOCATOR);
+        List<WebElement> productNewPrices = driver.findElements(PRODUCT_NEW_PRICES_LOCATOR);
         List<CatalogProductInfo> products = new ArrayList<CatalogProductInfo>();
+
         for (int i = 0; i < productNames.size(); i++) {
             String name = productNames.get(i).getText();
             String oldPriceString = productOldPrices.get(i).getText();
@@ -34,6 +33,7 @@ public class HPShopCatalogPage extends HPShopPage {
                     .substring(newPriceString.indexOf("\n") + 1, newPriceString.length() - 5));
             products.add(new CatalogProductInfo(name, oldPrice, newPrice));
         }
+
         return products;
     }
 }

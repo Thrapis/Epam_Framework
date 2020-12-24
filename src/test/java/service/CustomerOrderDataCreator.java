@@ -1,6 +1,6 @@
 package service;
 
-import model.CustomerOrderData;
+import model.order.CustomerOrderData;
 
 public class CustomerOrderDataCreator {
 
@@ -11,11 +11,11 @@ public class CustomerOrderDataCreator {
     public static final String TESTDATA_ORDERDATA_COMMENT = "test.data.orderData.first.comment";
 
     public static CustomerOrderData withCredentialsFromProperty(){
-        return new CustomerOrderData(TestDataReader.getTestData(TESTDATA_ORDERDATA_FULLNAME),
-                TestDataReader.getTestData(TESTDATA_ORDERDATA_EMAIL),
-                TestDataReader.getTestData(TESTDATA_ORDERDATA_PHONENUMBER),
-                TestDataReader.getTestData(TESTDATA_ORDERDATA_ADDRESS),
-                TestDataReader.getTestData(TESTDATA_ORDERDATA_COMMENT)
+        return new CustomerOrderData(TestDataReader.getEnvironmentData(TESTDATA_ORDERDATA_FULLNAME),
+                TestDataReader.getEnvironmentData(TESTDATA_ORDERDATA_EMAIL),
+                TestDataReader.getEnvironmentData(TESTDATA_ORDERDATA_PHONENUMBER),
+                TestDataReader.getEnvironmentData(TESTDATA_ORDERDATA_ADDRESS),
+                TestDataReader.getEnvironmentData(TESTDATA_ORDERDATA_COMMENT)
                 );
     }
 
