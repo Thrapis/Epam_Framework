@@ -26,6 +26,7 @@ public class HPShopSuccessOrderPage extends HPShopPage {
         ArrayList<String> tabs = new ArrayList<String>(driver.getWindowHandles());
         driver.switchTo().window(tabs.get(tabs.size() - 1));
 
+        logger.info("The WebPay page is opened");
         return new WebPayPaymentPage(driver);
     }
 }

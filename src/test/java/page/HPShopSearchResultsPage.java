@@ -18,12 +18,16 @@ public class HPShopSearchResultsPage extends HPShopPage{
     public HPShopProductPage selectProductLink(String name) {
         By productLinkLocator = By.xpath(String.format(productLinkTemplate, name));
         WaitElementMethods.waitForElementLocatedBy(driver, productLinkLocator, WAIT_TIME_SECONDS).click();
+
+        logger.info("Product link of '" + name + "' is selected");
         return new HPShopProductPage(driver);
     }
 
     public HPShopSearchResultsPage addToCart(String name) {
         By addToCartButtonLocator = By.xpath(String.format(addToCartButtonTemplate, name));
         WaitElementMethods.waitForElementLocatedBy(driver, addToCartButtonLocator, WAIT_TIME_SECONDS).click();
+
+        logger.info("Product of'" + name + "' is added to cart");
         return this;
     }
 

@@ -1,12 +1,10 @@
 package page;
 
 import model.*;
-import org.apache.tools.ant.taskdefs.Sleep;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 import wait.WaitElementMethods;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,16 +44,17 @@ public class HPShopCartPage extends HPShopPage{
         By productLocator = By.xpath(String.format(productCountPathTemplate, name));
         WebElement productCountElement = WaitElementMethods.waitForElementLocatedBy(driver,
                 productLocator, WAIT_TIME_SECONDS);
+
         return Integer.parseInt(productCountElement.getAttribute("value"));
     }
 
     public double getCartTotalCost() {
-        WebElement cartTotal = WaitElementMethods.waitForElementLocatedBy(driver,
-                By.xpath("//td[@id='cart_total']"), WAIT_TIME_SECONDS);
-        String cartTotalText = cartTotal.getText();
+        String cartTotalText = WaitElementMethods.waitForElementLocatedBy(driver,
+                By.xpath("//td[@id='cart_total']"), WAIT_TIME_SECONDS).getText();
         double totalCost = Double.parseDouble(cartTotalText
                 .substring(0, cartTotalText.length() - 3)
                 .replace(" ", ""));
+
         return totalCost;
     }
 
@@ -79,8 +78,11 @@ public class HPShopCartPage extends HPShopPage{
         WebElement inputCount = WaitElementMethods.waitForElementLocatedBy(driver, inputCountLocator, WAIT_TIME_SECONDS);
         inputCount.clear();
         inputCount.sendKeys(count.toString());
+
         WaitElementMethods.waitForElementLocatedBy(driver, confirmButton, WAIT_TIME_SECONDS).click();
         new WebDriverWait(driver, WAIT_TIME_SECONDS).until(ExpectedConditions.invisibilityOfElementLocated(confirmButton));
+
+        logger.info("Count of product '" + name + "' was set at '" + count.toString() + "'");
         return this;
     }
 
@@ -88,11 +90,9 @@ public class HPShopCartPage extends HPShopPage{
         By radioButtonLocator = By.xpath(String.format(inputWithTypeAndValueTemplate, "radio", deliveryMethod.getDeliveryMethod()));
         WaitElementMethods.waitForElementLocatedBy(driver, radioButtonLocator, WAIT_TIME_SECONDS).click();
 
-        WebDriverWait wait = new WebDriverWait(driver, WAIT_TIME_SECONDS);
-        wait.until(driver -> (boolean)((JavascriptExecutor)driver).
-                executeScript("return jQuery.active == 0"));
+        WaitElementMethods.waitUntilAjaxCompleted(driver, WAIT_TIME_SECONDS);
 
-        logger.info("Set delivery method");
+        logger.info("Delivery method was set at '" + deliveryMethod.getDeliveryMethod() + "'");
         return this;
     }
 
@@ -100,7 +100,7 @@ public class HPShopCartPage extends HPShopPage{
         By radioButtonLocator = By.xpath(String.format(inputWithTypeAndValueTemplate, "radio", paymentMethod.getPaymentMethod()));
         WaitElementMethods.waitForElementLocatedBy(driver, radioButtonLocator, WAIT_TIME_SECONDS).click();
 
-        logger.info("Set payment method");
+        logger.info("Payment method was set at '" + paymentMethod.getPaymentMethod() + "'");
         return this;
     }
 
@@ -130,54 +130,51 @@ public class HPShopCartPage extends HPShopPage{
         By productLocator = By.xpath(String.format(productDeleteButtonTemplate, name));
         WaitElementMethods.waitForElementLocatedBy(driver, productLocator, WAIT_TIME_SECONDS).click();
 
-        WebDriverWait wait = new WebDriverWait(driver, WAIT_TIME_SECONDS);
         By confirmButtonLocator = By.xpath(confirmButtonPath);
-        wait.until(ExpectedConditions.elementToBeClickable(confirmButtonLocator));
-        WaitElementMethods.fluentWaitForElementLocatedBy(
-                driver, confirmButtonLocator, WAIT_TIME_SECONDS, 1).click();
-        new WebDriverWait(driver, WAIT_TIME_FEW_SECONDS).until(ExpectedConditions
-                .invisibilityOfElementLocated(confirmButtonLocator));
+        WaitElementMethods.waitUntilElementToBeClickable(driver, confirmButtonLocator, WAIT_TIME_SECONDS);
+        WaitElementMethods.fluentWaitForElementLocatedBy(driver, confirmButtonLocator, WAIT_TIME_SECONDS, 1).click();
+
+        WaitElementMethods.waitUntilInvisibilityOfElementLocatedBy(driver, confirmButtonLocator, WAIT_TIME_SECONDS);
 
         logger.info("Product '" + name + "' deleted from cart");
         return this;
     }
 
     public HPShopCartPage purgeCart() {
-        WebDriverWait wait = new WebDriverWait(driver, WAIT_TIME_SECONDS);
         By purgeCartLocator = By.xpath("//a[@id='butEmptyCart']");
         By confirmButtonLocator = By.xpath(confirmButtonPath);
         By emptyMessageLocator = By.xpath("//div[@id='shopCart']/p");
 
-        wait.until(ExpectedConditions.elementToBeClickable(purgeCartLocator));
-        WaitElementMethods.fluentWaitForElementLocatedBy(
-                driver, purgeCartLocator, WAIT_TIME_SECONDS, 1).click();
+        //WaitElementMethods.waitUntilElementToBeClickable(driver, purgeCartLocator, WAIT_TIME_SECONDS);
+        WaitElementMethods.fluentWaitForElementLocatedBy(driver, purgeCartLocator, WAIT_TIME_SECONDS, 1).click();
 
-        wait.until(ExpectedConditions.elementToBeClickable(confirmButtonLocator));
-        WaitElementMethods.fluentWaitForElementLocatedBy(
-                driver, confirmButtonLocator, WAIT_TIME_SECONDS, 1).click();
+        //WaitElementMethods.waitUntilElementToBeClickable(driver, confirmButtonLocator, WAIT_TIME_SECONDS);
+        WaitElementMethods.fluentWaitForElementLocatedBy(driver, confirmButtonLocator, WAIT_TIME_SECONDS, 1).click();
         WaitElementMethods.fluentWaitForElementLocatedBy(driver, emptyMessageLocator, WAIT_TIME_SECONDS, 1);
 
-        logger.info("Purge the cart");
+        logger.info("Cart purged");
         return this;
     }
 
     public HPShopPage checkoutOrder() {
         By submitButtonLocator = By.xpath(String.format(inputWithTypeAndValueTemplate, "submit", "Оформить заказ"));
-        WaitElementMethods.waitForElementLocatedBy(driver, submitButtonLocator, WAIT_TIME_SECONDS).click();
-        logger.info("Checkout order");
-
         By failureLocator = By.xpath("//div[@class='contact-form']/div[@class='errors']");
+        WaitElementMethods.waitForElementLocatedBy(driver, submitButtonLocator, WAIT_TIME_SECONDS).click();
+
+
         if (driver.findElements(failureLocator).size() != 0) {
+            logger.info("Order not checkout");
             return new HPShopCartPage(driver);
         }
+        logger.info("Order checkout");
         return new HPShopSuccessOrderPage(driver);
     }
 
     public HPShopSuccessOrderPage checkoutSuccessOrder() {
         By submitButtonLocator = By.xpath(String.format(inputWithTypeAndValueTemplate, "submit", "Оформить заказ"));
         WaitElementMethods.waitForElementLocatedBy(driver, submitButtonLocator, WAIT_TIME_SECONDS).click();
-        logger.info("Checkout success order");
 
+        logger.info("Order checkout");
         return new HPShopSuccessOrderPage(driver);
     }
 }

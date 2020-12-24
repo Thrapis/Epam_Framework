@@ -5,11 +5,8 @@ import model.CatalogLink;
 import model.CatalogSubcategory;
 import model.ProductLink;
 import org.openqa.selenium.WebDriver;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.*;
 import driver.DriverSingleton;
-import org.testng.annotations.Listeners;
 import util.TestListener;
 
 @Listeners({TestListener.class})
@@ -27,7 +24,7 @@ public abstract class CommonConditions {
         driver = DriverSingleton.getDriver();
     }
 
-    @BeforeMethod(alwaysRun = true)
+    @AfterMethod(alwaysRun = true)
     public void clearCookies() {
         DriverSingleton.deleteAllCookies();
     }

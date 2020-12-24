@@ -4,7 +4,7 @@
 <suite name="smoke" verbose="1" >
     <test name="smoke">
         <classes>
-            <class name="test.HPShopTests"/>
+            <class name="test.ExtendedTests"/>
         </classes>
     </test>
 </suite>

@@ -10,19 +10,8 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-public class HPShopTests extends CommonConditions {
+public class ExtendedTests extends CommonConditions {
 
-    //1
-    @Test(enabled = true)
-    public void verifyEmptySearchResultsTest() {
-        String searchTerm = "qwerty";
-        HPShopSearchResultsPage searchResultsPage = new HPShopHomePage(driver)
-                .searchForTerms(searchTerm);
-
-        assertThat(searchResultsPage.getSearchStatus(), is(equalTo(FullnessStatus.EMPTY)));
-    }
-
-    //2
     @Test(enabled = true)
     public void verifyCartAfterAdditionOfProductTest() {
         double expectedCartTotalCost = 513.0;
@@ -33,13 +22,34 @@ public class HPShopTests extends CommonConditions {
                 .addToCart()
                 .openCart();
         List<ProductInfo> products = cartPage.getProductsFromCart();
-        
+
         assertThat(cartPage.getCartTotalCost(), is(equalTo(expectedCartTotalCost)));
         assertThat(products.get(0).getName(), containsString(expectedProductName));
         assertThat(products.get(0).getCount(), is(equalTo(expectedProductCount)));
     }
 
-    //3
+    @Test(enabled = true)
+    public void verifyAddingALargeNumberOfProductsTest() {
+        int countOfProduct = 2_000_000;
+        double expectedCartTotalCost = 1_026_000_000.0;
+        HPShopCartPage cartPage = new HPShopHomePage(driver)
+                .jumpToProductPage(firstProductLink)
+                .setCountOfProduct(countOfProduct)
+                .addToCart()
+                .openCart();
+
+        assertThat(cartPage.getCartTotalCost(), is(equalTo(expectedCartTotalCost)));
+    }
+
+    @Test(enabled = true)
+    public void verifyEmptySearchResultsTest() {
+        String searchTerm = "qwerty";
+        HPShopSearchResultsPage searchResultsPage = new HPShopHomePage(driver)
+                .searchForTerms(searchTerm);
+
+        assertThat(searchResultsPage.getSearchStatus(), is(equalTo(FullnessStatus.EMPTY)));
+    }
+
     @Test(enabled = true)
     public void verifyFailedOrderTest() {
         CustomerOrderData customerOrderData = CustomerOrderDataCreator.withEmptyCredentials();
@@ -54,7 +64,6 @@ public class HPShopTests extends CommonConditions {
         assertThat(openedPage, is(instanceOf(HPShopCartPage.class)));
     }
 
-    //4
     @Test(enabled = true)
     public void verifyCartAfterAdditionAndDeletingOfProductTest() {
         int expectedCountOfProductsInCart = 1;
@@ -71,7 +80,6 @@ public class HPShopTests extends CommonConditions {
         assertThat(actualCountOfProductsInCart, is(equalTo(expectedCountOfProductsInCart)));
     }
 
-    //5
     @Test(enabled = true)
     public void verifyCartAfterPurgeTest() {
         HPShopCartPage cartPage = new HPShopHomePage(driver)
@@ -87,7 +95,6 @@ public class HPShopTests extends CommonConditions {
         assertThat(cartPage.getCartStatus(), is(equalTo(FullnessStatus.EMPTY)));
     }
 
-    //6
     @Test(enabled = true)
     public void verifySuccessOrderWithCardPayTest() {
         CustomerOrderData customerOrderData = CustomerOrderDataCreator.withCredentialsFromProperty();
@@ -104,21 +111,6 @@ public class HPShopTests extends CommonConditions {
         assertThat(paymentPage.getEmail(), is(equalTo(customerOrderData.getEmail())));
     }
 
-    //7
-    @Test(enabled = true)
-    public void verifyAddingALargeNumberOfProductsTest() {
-        int countOfProduct = 2_000_000;
-        double expectedCartTotalCost = 1_026_000_000.0;
-        HPShopCartPage cartPage = new HPShopHomePage(driver)
-                .jumpToProductPage(firstProductLink)
-                .setCountOfProduct(countOfProduct)
-                .addToCart()
-                .openCart();
-
-        assertThat(cartPage.getCartTotalCost(), is(equalTo(expectedCartTotalCost)));
-    }
-
-    //8
     @Test(enabled = true)
     public void verifyChangeTheQuantityOfProductsTest() {
         int countOfProduct = 2_000;
@@ -135,7 +127,6 @@ public class HPShopTests extends CommonConditions {
         assertThat(cartPage.getCartTotalCost(), is(equalTo(expectedCartTotalCost)));
     }
 
-    //9
     @Test(enabled = true)
     public void verifySelectionOnlyElementsOfTypeMouseTest() {
         String expectedNameContainment = "Мышь";
@@ -146,7 +137,6 @@ public class HPShopTests extends CommonConditions {
         assertThat(products.get(0).getName(), containsString(expectedNameContainment));
     }
 
-    //10
     @Test(enabled = true)
     public void verifyChangeOfDeliveryMethodTest() {
         double expectedCartTotalCost = 528.0;
